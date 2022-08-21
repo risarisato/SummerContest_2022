@@ -5,21 +5,18 @@
     box-sizing: border-box;
 }
 
-/* canvas1だけしているcss */
-#canvas1{
+/* canvas001だけしているcss */
+#canvas001{
     border: 5px solid black;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #4d79bc;
+    background-color: #4dbc65;
 
-    /* canvas1の画像比率の縮尺を固定 */
+    /* canvas001の画像比率の縮尺を固定 */
     max-width: 100%;
     max-height: 100%;
-
-    /* googleフォントのCSSも貼り付ける */
-    font-family: 'Bangers', cursive;
 }
 
 /* htmlで表示される：各layer1-4を表示させない

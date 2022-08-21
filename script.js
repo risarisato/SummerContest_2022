@@ -4,8 +4,8 @@ window.addEventListener('load', function(){
     const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
     // cssで固定画面サイズに対応させているs
-    canvas.width = 1000;
-    canvas.height = 500;
+    canvas.width =  100;
+    canvas.height = 100;
 
     // キーボード操作入力
     class InputHandler {
