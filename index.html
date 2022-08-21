@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer_Contest_2022</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id = "canvas1"></canvas>
+
+    <!-- プロジェクトを3つに分離する -->
+    <!-- characters_キャラクター -->
+    <img id = "player" src="assets/player.png">
+    <img id = "angler1" src="assets/angler1.png">
+    <img id = "angler2" src="assets/angler2.png">
+    <img id = "lucky" src="assets/lucky.png">
+    <img id = "hivewhale" src="assets/hivewhale.png">
+    <img id = "drone" src="assets/drone.png">
+
+    <!-- 発射物レーザ -->
+    <img id = "projectile" src="assets/projectile.png">
+
+    <!-- props_敵を破壊すると「小道具」が落ちる -->
+    <img id = "gears" src="assets/gears.png">
+    <img id = "smokeExplosion" src="assets/smokeExplosion.png">
+    <img id = "fireExplosion" src="assets/fireExplosion.png">
+
+    <!-- enviromnet_敵にダメージを与えてゲームする環境 -->
+    <img id = "layer1" src="assets/layer1.png">
+    <img id = "layer2" src="assets/layer2.png">
+    <img id = "layer3" src="assets/layer3.png">
+    <img id = "layer4" src="assets/layer4.png">
+
+    <!-- <script src = "script.js"></script> -->
+
+    <canvas width="800px" height="800px" id="canvas"></canvas>
+    <script src="dinoGame.js"></script>
+
+    <canvas width="800px" height="900px" id="canvas01"></canvas>
+    <script src="dinoGame01.js"></script>
+</body>
+</html>
