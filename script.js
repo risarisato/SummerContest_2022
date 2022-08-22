@@ -139,8 +139,8 @@ window.addEventListener('load', function(){
             this.x = 20;
             this.y = 100;
 
-            this.frameX = 0; // スプライトシートを循環する水平方向X[0]が行を決定
-            this.frameY = 0; // スプライトシートを循環する水平方向Y[0]が列を決定
+            //this.frameX = 0; // スプライトシートを循環する水平方向X[0]が行を決定
+            //this.frameY = 0; // スプライトシートを循環する水平方向Y[0]が列を決定
             //this.maxFrame = 37; // スプライトシートのフレーム37
 
             // プレイヤー垂直速度初期値
@@ -199,7 +199,7 @@ window.addEventListener('load', function(){
         }
         // context引数を外からもってくるやりかた＝ctx同じ
         draw(context){
-            context.fillStyle = 'black';//プレイヤーの色→strokeRectでいらない
+            context.fillStyle = 'blue';//プレイヤーの色→strokeRectでいらない
             context.fillRect(this.x, this.y, this.width, this.height);//塗りつぶし
 
             //デバッグモードの枠線
@@ -525,7 +525,6 @@ window.addEventListener('load', function(){
                 // (20, 50)開始位置です。幅は 3 で高さは 20 です。
                 // (20 + 5 * i), (50), (3), (20)→カンマ区切り
                 context.fillRect( 20 + 5 * i, 50, 3, 20);
-            
                 //context.fillText(i , 180, 40);→残数の表示がおかしい
             }
             */
@@ -663,14 +662,12 @@ window.addEventListener('load', function(){
                         //this.particles.push(new Particle(this, enemy.x + enemy.width
                         //* 0.5, enemy.y + enemy.height * 0.5));
 
-                        
                         // 敵を発射物レーザーで破壊したとき10(enemy.score)個の残骸→自爆やレーザで歯車残骸の数を変更
                         if (enemy.lives <= 0){
                             for(let i = 0; i < enemy.score; i++){
                                 //this.particles.push(new Particle(this, enemy.x +
                                      //enemy.width * 0.5, enemy.y + enemy.height * 0.5));
                             }
-                            
                             enemy.markedForDeletion = true;
                             //this.addExplosion(enemy);
                             // 敵が大型のhivewhaleに発射物レーザで倒したら、droneが5匹でる
@@ -710,9 +707,9 @@ window.addEventListener('load', function(){
             // ①レイヤー設定したバックグラウンドを描く
             //this.background.draw(context);
             // ②弾薬表示の呼び出し
-            this.ui.draw(context);
-            // ③プレイヤーの呼び出し
             this.player.draw(context);
+            // ③プレイヤーの呼び出し
+            this.ui.draw(context);
             // drawメソッド内でparticle.draw(context)で歯車の配列を渡す
             //this.particles.forEach(particle => particle.draw(context));
             // 敵クラスの呼び出し
