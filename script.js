@@ -515,7 +515,7 @@ window.addEventListener('load', function(){
             // this.fontSize + 'px_' スペースがないと変数を読み込まない
             context.font = this.fontSize + 'px ' + this.fontFamily;
             context.fillText('Score: ' + this.game.score, 20, 40);
-            context.fillText('弾数: ', 140, 40);
+            context.fillText('弾数: ', 150, 40);
 
 
             /* レーザ発射物の残数
@@ -555,8 +555,9 @@ window.addEventListener('load', function(){
             for (let i = 0; i < this.game.ammo; i++){
                 // (20, 50)開始位置です。幅は 3 で高さは 20 です。
                 // (20 + 5 * i), (50), (3), (20)→カンマ区切り
+                //context.fillText(this.game.ammo + formattedTime, 180, 40);//→残数の表示がおかしい
                 context.fillRect( 20 + 5 * i, 50, 3, 20);
-                context.fillText(i , 180, 40);//→残数の表示がおかしい
+                context.fillText(this.game.ammo + formattedTime, 210, 40);//→残数の表示がおかしい
             }
             context.restore();// スコープ内のcontextだけ影を終了
         }
@@ -599,7 +600,7 @@ window.addEventListener('load', function(){
             this.gameTime = 0;
             this.timeLimit = 30000;
 
-            this.speed = 1; // 背景バックグラウンド速度
+            this.speed = 3; // 背景バックグラウンド速度
             //this.debug = true;// 最初からデバッグモードが使えるとおかしい
             this.debug = true;
         }
