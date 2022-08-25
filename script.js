@@ -1,3 +1,4 @@
+"use strict"
 //全体をロードするイベントリスナー
 window.addEventListener('load', function(){
     // canvas1の設定
@@ -52,7 +53,8 @@ window.addEventListener('load', function(){
         }
         update(){
             this.x += this.speed;
-            if (this.x > this.game.width * 0.8) this.markedForDeletion = true;
+            //this.y += this.speed; //斜めにレーザー
+            if (this.x > this.game.width * 0.9) this.markedForDeletion = true;
         }
         draw(context){
             //context.drawImage(this.image, this.x, this.y);
@@ -177,6 +179,7 @@ window.addEventListener('load', function(){
             // filter()で通過するすべての要素に新しい配列を提供する
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
 
+            /*
             // スプライトをアニメーションフレームにする
             // maxFrame37まで＋＋して、それ以外は「0」に戻す→forで繰り返してない
             if(this.frameX < this.maxFrame){
@@ -184,15 +187,16 @@ window.addEventListener('load', function(){
             } else {
                 this.frameX = 0;
             }
+            */
             // プレイヤーのpowerアップ
             if(this.powerUp){
                 if(this.powerUpTimer > this.powerUpLimit){
                     this.powerUpTimer = 0;
                     this.powerUp = false;
-                    this.frameY = 0;
+                    //this.frameY = 0;
                 } else {
                     this.powerUpTimer += deltaTime;
-                    this.frameY = 1;
+                    //this.frameY = 1;
                     this.game.ammo += 0.1;
                 }
             }
@@ -217,9 +221,6 @@ window.addEventListener('load', function(){
             //context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height,
                 //this.width, this.height, this.x, this.y, this.width, this.height);
             // 発射物の配列を取り出す＞呼び出す
-            this.projectiles.forEach(projectile => {
-                projectile.draw(context);
-            });
         }
         // 準備した発射物を攻撃できる
         shootTop(){
@@ -235,7 +236,7 @@ window.addEventListener('load', function(){
         // パワーアップして、下からも打てる
         shootBottom(){
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 175 ));
+                this.projectiles.push(new Projectile(this.game, this.x + 157, this.y + 51 ));
             }
             //console.log(this.projectiles);
         }
