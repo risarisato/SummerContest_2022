@@ -26,7 +26,7 @@ window.addEventListener('load', function(){
                 } else if ( e.key === 'd'){
                     this.game.debug = !this.game.debug;
                 }
-                console.log(this.game.keys);
+                //console.log(this.game.keys);
             });
             //上記で「上矢印」で配列に格納されたArrowUpのみspliceで切り取る
             // ['ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', …となってしまう]
@@ -34,7 +34,7 @@ window.addEventListener('load', function(){
                 if(this.game.keys.indexOf(e.key) > -1){
                    this.game.keys.splice(this.game.keys.indexOf(e.key), 1);
                 }
-                console.log(this.game.keys);
+                //console.log(this.game.keys);
             });
 
         }
@@ -43,25 +43,24 @@ window.addEventListener('load', function(){
 
     // レーザー攻撃:発射物の準備
     class Projectile {
-        // 3つの引数が必要
+        // コンストラクタ＞3つの引数が必要
         constructor(game, x, y, speed){
             this.game = game;
             this.x = x;
             this.y = y;
             this.width = 10;
             this.height = 3;
-            this.speed = 3;
+            this.speed = 7;
             this.markedForDeletion = false;
-            //this.image = document.getElementById('projectile');
         }
         update(){
             this.x += this.speed;
             //this.y += this.speed; //斜めにレーザー
-            if (this.x > this.game.width * 0.9) this.markedForDeletion = true;
+            //レーザの距離はwitdth幅*0.95まで
+            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
         draw(context){
-            //context.drawImage(this.image, this.x, this.y);
-            //下記はcanvasで描いたもの
+            //canvasで描いたもレーザ
             context.fillStyle = 'yellow';
             context.fillRect(this.x, this.y, this.width, this.height);
         }
@@ -73,33 +72,33 @@ window.addEventListener('load', function(){
         constructor(game){
             this.game = game;
             // プレイヤーの大きさ
-            this.width = 120;
-            this.height = 190;
+            this.width = 40;
+            this.height = 70;
             // プレイヤー位置
-            this.x = 20;
-            this.y = 100;
+            this.x = 80;
+            this.y = 200;
 
             // プレイヤー速度初期値
             this.speedY = 0;
             this.speedX = 0;
-            // フィールドに置いた値をY速度に「this.maxSpeed」持っていくテクニック
-            this.maxSpeed = 9;
+            // プレイヤー速度
+            this.maxSpeed = 5;
             // 発射物の配列
             this.projectiles = [];
 
             // パワーアップの定義
             this.powerUp = false; // 最初からパワーアップしない
             this.powerUpTimer = 0;
-            this.powerUpLimit = 10000;
+            this.powerUpLimit = 15000;
         }
-        // プレイヤーの垂直方向のY.X速度
+        // プレイヤーの垂直方向のY速度
         update(deltaTime){
             if (this.game.keys.includes('ArrowUp')) this.speedY = -this.maxSpeed;
             else if (this.game.keys.includes('ArrowDown')) this.speedY = this.maxSpeed;
             else this.speedY = 0;
             this.y += this.speedY;
 
-
+            // プレイヤーの垂直方向のX速度
             if (this.game.keys.includes('ArrowLeft')) this.speedX = -this.maxSpeed;
             else if (this.game.keys.includes('ArrowRight')) this.speedX = this.maxSpeed;
             else this.speedX = 0;
@@ -125,15 +124,13 @@ window.addEventListener('load', function(){
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
 
 
-            // プレイヤーのpowerアップ
+            // プレイヤーのpowerUpアップタイマー
             if(this.powerUp){
                 if(this.powerUpTimer > this.powerUpLimit){
                     this.powerUpTimer = 0;
                     this.powerUp = false;
-                    //this.frameY = 0;
                 } else {
                     this.powerUpTimer += deltaTime;
-                    //this.frameY = 1;
                     this.game.ammo += 0.1;
                 }
             }
@@ -142,6 +139,10 @@ window.addEventListener('load', function(){
         draw(context){
             context.fillStyle = 'blue';//プレイヤーの色→strokeRectでいらない
             context.fillRect(this.x, this.y, this.width, this.height);//塗りつぶし
+            //x座標, y座標, 半径, 開始位置, 終了位置, 時計回りかどうか
+            //context.arc(this.x, this.y, this.width, this.height * Math.PI, false);
+            //context.arcTo(this.x, this.y, this.width, this.height * Math.PI, false);
+            //context.fill();→うまくできない
 
             //デバッグモードの枠線
             if(this.game.debug)
@@ -155,24 +156,20 @@ window.addEventListener('load', function(){
         shootTop(){
             // 弾薬を無制限で打てないようにする
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 30));
-                //console.log(this.projectiles);
+                this.projectiles.push(new Projectile(this.game, this.x + 20, this.y + 30));
                 this.game.ammo--;
             }
-            //console.log(this.projectiles);
             if (this.powerUp) this.shootBottom();
         }
-        // パワーアップして、下からも打てる
+        // パワーアップして、3連打になる
         shootBottom(){
             if (this.game.ammo > 0){
-                //this.projectiles.push(new Projectile(this.game, this.x + 57, this.y + 151));
-                //this.projectiles.push(new Projectile(this));
+                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y));
+                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y + 70));
             }
-            this.projectiles.push(new Projectile(game, x + 57, y + 151, speed +8));
         }
 
-            //console.log(this.projectiles);
-        // プレイヤーのpowerアップ
+        // プレイヤーのpowerアップ弾数
         enterPowerUp(){
             this.powerUpTimer = 0;
             this.powerUp = true;
@@ -189,63 +186,35 @@ window.addEventListener('load', function(){
         constructor(game){
             this.game = game;
             this.x = this.game.width;// 敵はX軸方向から来襲
-            this.speedX = Math.random() * -1.5 -0.5;
+            this.speedX = Math.random() * -1.5  -6.5;
             this.markedForDeletion = false;// レーザに当たるとfalse
-            //this.lives = 5;// 敵のライフが5
-            //this.score = this.lives;// 敵ライフ5と点数5が等しい関係
-
-            // 敵キャラクター座標とフレーム初期値
-            this.frameX = 0;
-            this.frameY = 0;
-            //this.maxFrame = 37;
         }
         update(){// 敵の水平X軸を調整する
-            //this.x += this.speedX;
             this.x += this.speedX - this.game.speed;
             if(this.x + this.width < 0) this.markedForDeletion = true;
-
-            /*
-            敵のアニメーション
-            if(this.frameX < this.maxFrame){
-                this.frameX++;
-            } else this.frameX = 0;
-            */
         }
         draw(context){
-            //プレイヤーの塗りつぶしと同じ考え
+            //塗りつぶしと同じ考え
             context.fillStyle = 'red';
-            context.fillRect(this.x, this.y, this.width * 0.3, this.height * 0.3);
+            context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
 
-            if(this.game.debug)//プレイヤーと同じくデバッグモードを敵に追加
-            // 敵キャラクターが四角枠だけになる
-            context.strokeRect(this.x, this.y, this.width, this.height);
-            // 敵キャラクターを大きなスプライトシートで1枚で読み込む
-            //context.drawImage(this.image, this.x, this.y);
-            // 1枚シートを228×169の大きさでを全体を表示
-            //context.drawImage(this.image, this.x, this.y, this.width, this.height);
-            // sx,sy,sw,shの紹介
-            //context.drawImage(this.image, sx, sy, sw, sh, this.x, this.y, this.width, this.height);
-            //context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height,
-                //this.width, this.height, this.x, this.y, this.width, this.height);
-            //context.drawImage(this.image, this.x, this.y);
-            //敵ライフを視覚的に見えるようにする
-            //context.fillStyle = 'black'; デフォルトで黒らしい
+            //四角枠デバックデバッグモードを敵に追加(当たり判定)
+            if(this.game.debug)
+            context.strokeRect(this.x - 5, this.y - 5, this.width, this.height);
             if(this.game.debug){
             context.font = '20px Helvatica';
             context.fillText(this.lives, this.x, this.y);
             }
         }
     }
-    // 継承関係の敵キャラクター(Angler1)オーバライド
+    // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
         constructor(game){
             super(game);
-            this.width = 228 * 0.5; //大きさは調整したときの残り
-            this.height = 169 * 0.5;
+            this.width = 100; //大きさは調整したときの残り
+            this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            //this.image = document.getElementById('angler1');
-            this.frameY = Math.floor(Math.random() * 3);
             this.lives = 2;
             this.score = this.lives;
         }
@@ -255,11 +224,9 @@ window.addEventListener('load', function(){
     class Angler2 extends Enemy {
         constructor(game){
             super(game);
-            this.width = 213 * 0.5;
-            this.height = 165 * 0.5;
+            this.width = 213;
+            this.height = 165;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            //this.image = document.getElementById('angler2');
-            this.frameY = Math.floor(Math.random() * 2);
             this.lives = 3;
             this.score = this.lives;
         }
@@ -274,7 +241,7 @@ window.addEventListener('load', function(){
             //this.image = document.getElementById('lucky');
             this.frameY = Math.floor(Math.random() * 2);
             this.lives = 3;
-            this.score = 3;
+            this.score = 7;
             this.type = 'lucky';
         }
     }
@@ -282,11 +249,10 @@ window.addEventListener('load', function(){
     class Hivewhale extends Enemy {
         constructor(game){
             super(game);
-            this.width = 400 * 0.5;
-            this.height = 227 * 0.5;
+            this.width = 400 * 0.9;
+            this.height = 227 * 0.9;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
             //this.image = document.getElementById('hivewhale');
-            this.frameY = 0;
             this.lives = 20;
             this.score = this.lives;
             this.type = 'hive';
@@ -309,59 +275,6 @@ window.addEventListener('load', function(){
             this.speed = Math.random() * -4.2 -0.5;
         }
     }
-    // レイヤーオブジェクトの設定するクラス
-    class Layer {
-        constructor(game, image, speedModifier){
-            this.game = game;
-            this.image = image;
-            this.speedModifier = speedModifier;
-            this.width = 1768;// 背景画像大きさ
-            this.height = 500;
-            this.x = 0;// 背景画像の開始座標
-            this.y = 0;
-        }
-        update(){
-            // 更新＞画像の動き方＞画像が左から右へ
-            if(this.x <= -this.width)
-            // 再びスクロールできるように「0」
-            this.x = 0;
-            // それ以外は、Xをゲーム速度倍に減らす視差
-            //else this.x -= this.game.speed * this.speedModifier;
-            this.x -= this.game.speed * this.speedModifier;// 画面端っこをスムーズにする
-        }
-        // レイヤーを描く
-        draw(context){
-            //context.drawImage(this.image, this.x, this.y);
-            //2番目に同一の画像を書くことでシームレスになる
-            //context.drawImage(this.image, this.x + this.width, this.y);
-        }
-    }
-
-    // 各レイヤー背景クラスを処理するクラス
-    class Background {
-        constructor(game){
-            this.game = game;
-            // javascriptでのhtmlを呼び出すID＝layer1
-            //this.image1 = document.getElementById('layer1');
-            //this.image2 = document.getElementById('layer2');
-            //this.image3 = document.getElementById('layer3');
-            //this.image4 = document.getElementById('layer4');
-            //this.layer1 = new Layer(this.game, this.image1, 0.2);
-            //this.layer2 = new Layer(this.game, this.image2, 0.4);
-            //this.layer3 = new Layer(this.game, this.image3, 1);
-            //this.layer4 = new Layer(this.game, this.image4, 1.5);
-            //this.layers = [this.layer1, this.layer2, this.layer3, this.layer4];
-            // レイヤー4を同一に表示させない
-            //this.layers = [this.layer1, this.layer2, this.layer3];
-        }
-        update(){
-            //this.layers.forEach(layer => layer.update());
-        }
-        draw(context){
-            //this.layers.forEach(layer => layer.draw(context));
-        }
-    }
-
 
     // 弾薬数タイマーやカウントダウンを表示
     class UI {
@@ -369,12 +282,12 @@ window.addEventListener('load', function(){
             // フィールド情報
             this.game = game;
             this.fontSize = 25;
-            this.fontFamily = 'Bangers';
+            this.fontFamily = 'serif';
             this.color = 'white';
         }
         // 弾薬・スコア点数を描く
         draw(context){
-            context.save();// スコープ内のcontextだけ影を開始＞＞敵ライフ「5」に影なし
+            context.save();// スコープ内のcontextだけ影を開始
             context.fillStyle = this.color;
             context.shadowOffsetX = 2;//影をつけている
             context.shadowOffsetY = 2;//影をつけている
@@ -399,24 +312,29 @@ window.addEventListener('load', function(){
             */
             // ゲームカウントダウン
             const formattedTime = (this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
-            context.fillText('Timer: ' + formattedTime, 20, 90);// タイマーを表示させる座標
+            context.fillText('生存時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
 
             // ゲームが終わった時のメッセージ
             if (this.game.gameOver){
                 context.textAlin = 'center';
                 let message1;
                 let message2;
+                let message3;
                 if (this.game.score > this.game.winningScore){
                     message1 = 'You win!';
                     message2 = '点数：' + this.game.score + 'です！';
+                    message3 = '生存時間は：' + formattedTime + 'です！';
                 } else {
                     message1 = 'You lose!';
                     message2 = '点数：' + this.game.score + 'です！';
+                    message3 = '生存時間は：' + formattedTime + 'です！';
                 }
                 context.font = '70px ' + this.fontFamily;
                 context.fillText(message1, this.game.width * 0.5, this.game.height * 0.5 - 20);
                 context.font = '25px ' + this.fontFamily;
                 context.fillText(message2, this.game.width * 0.5, this.game.height * 0.5 + 20);
+                context.font = '25px ' + this.fontFamily;
+                context.fillText(message3, this.game.width * 0.5, this.game.height * 0.5 + 60);
             }
             // レーザ発射物の残数がパワーアップ時の色が変更される
             // context.fillStyle = this.color;
@@ -439,7 +357,7 @@ window.addEventListener('load', function(){
             this.height = height;
 
             // レイヤー設定したバックグラウンドをオブジェクト化
-            this.background = new Background(this);
+            //this.background = new Background(this);
 
             this.player = new Player(this);
             this.input = new InputHandler(this)
@@ -490,17 +408,6 @@ window.addEventListener('load', function(){
             } else {
                 this.ammoTimer += deltaTime;
             }
-
-            // 歯車の配列を呼び出す
-            //this.particles.forEach(particle => particle.update());
-            // filterメソッドで歯車の配列を置き換える
-            //this.particles = this.particles.filter(particle => !particle.markedForDeletion);
-
-            // 爆風の配列を呼び出す
-            //this.explosions.forEach(explosion=> explosion.update(deltaTime));
-            // filterメソッドで爆風の配列を置き換える
-            //this.explosions = this.explosions.filter(explosion => !explosion.markedForDeletion);
-
 
             // 敵クラスとレーザーの関係
             this.enemies.forEach(enemy => {
@@ -644,5 +551,4 @@ window.addEventListener('load', function(){
         requestAnimationFrame(animate);
     }
     animate(0);// animate(0)引数に「0」を入れる
-
 });
