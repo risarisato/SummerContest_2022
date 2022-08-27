@@ -15,7 +15,9 @@ window.addEventListener('load', function(){
             window.addEventListener('keydown', e => {
                 // if(e.key === 'ArrowUp'){ ['ArrowUp', 'ArrowUp'…上矢印の長押しに対応しない
                 if((    (e.key === 'ArrowUp') ||
-                        (e.key === 'ArrowDown')
+                        (e.key === 'ArrowDown') ||
+                        (e.key === 'ArrowLeft') ||
+                        (e.key === 'ArrowRight')
                 ) && this.game.keys.indexOf(e.key) === -1){
                     this.game.keys.push(e.key);
                 // 入力操作にスペースを追加して攻撃
@@ -24,6 +26,7 @@ window.addEventListener('load', function(){
                 } else if ( e.key === 'd'){
                     this.game.debug = !this.game.debug;
                 }
+                console.log(this.game.keys);
             });
             //上記で「上矢印」で配列に格納されたArrowUpのみspliceで切り取る
             // ['ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', …となってしまう]
@@ -31,7 +34,7 @@ window.addEventListener('load', function(){
                 if(this.game.keys.indexOf(e.key) > -1){
                    this.game.keys.splice(this.game.keys.indexOf(e.key), 1);
                 }
-                //console.log(this.game.keys);
+                console.log(this.game.keys);
             });
 
         }
@@ -41,7 +44,7 @@ window.addEventListener('load', function(){
     // レーザー攻撃:発射物の準備
     class Projectile {
         // 3つの引数が必要
-        constructor(game, x, y){
+        constructor(game, x, y, speed){
             this.game = game;
             this.x = x;
             this.y = y;
@@ -64,71 +67,6 @@ window.addEventListener('load', function(){
         }
     }
 
-    /*
-    // 敵に衝突した歯車残骸
-    class Particle {
-        constructor(game, x, y){
-            this.game = game;
-            this.x = x;
-            this.y = y;
-            this.image = document.getElementById('gears');
-            this.frameX = Math.floor(Math.random() * 3);// 歯車のX座標
-            this.frameY = Math.floor(Math.random() * 3);// 歯車のY座標
-            this.spriteSize = 50;// 歯車のサイズは50
-            this.sizeModifiler = (Math.random() * 0.5 + 0.5).toFixed(1);
-            this.size = this.spriteSize * this.sizeModifiler;
-            this.speedX = Math.random() * 6 - 3;// 敵を破壊したときに歯車がx軸に「6」か「3-」で出現
-            this.speedY = Math.random() * -15;// 歯車がY軸方向へ「-15」速さで落ちる
-            this.gravity = 0.5;// 重力
-            this.markedForDeletion = false;// 初期値は発射物レーターは偽
-            this.angle = 0;// 歯車の角度のアングル
-            this.va = Math.random() * 0.2 - 0.1;// 歯車の角度の乱数
-            //this.bounced = false;// バウンドさせない
-            this.bounced = 0;// バウンドが「0」回の初期値
-            this.bottomBouncedBoundary = Math.random() * 80 + 60;// 歯車がバウンド上下の高さ
-        }
-        update(){
-            this.angle += this.va;// vaによる回転角度
-            this.speedY += this.gravity;// 速度Yは重力によって増加
-
-            // ここまで重力の影響を受ける
-            this.x -= this.speedX + this.game.speed;
-            this.y += this.speedY;
-
-            // 発射物に当たると歯車はスクロールしている
-            if(this.y > this.game.height + this.size ||
-                this.x < 0 - this.size) this.markedForDeletion = true;
-
-            // バウンド条件
-            // if (this.y > this.game.height - this.bottomBouncedBoundary && !this.bounced){
-                if (this.y > this.game.height - this.bottomBouncedBoundary && this.bounced < 2){
-                //this.bounced = true;
-                this.bounced++;
-                this.speedY *= -0.7;
-            }
-        }
-        // 粒子画像はグリッドであるためフレームに必要なスプライトシート
-        // 各、粒子で切り取る考え方
-        // 歯車残骸が回転する
-        draw(context){
-            context.save();// セーブする
-            context.translate(this.x, this.y);// 歯車の回転の初期値
-            context.rotate(this.angle);// 歯車でangle加算加算
-            context.drawImage(this.image,
-                                this.frameX * this.spriteSize,
-                                this.frameY * this.spriteSize,
-                                this.spriteSize, this.spriteSize,
-                                //this.x,
-                                //this.y,// 歯車の初期値から回転してしまう
-                                //0, これだと歯車から回転してしまう
-                                //0,
-                                this.size * -0.5,// 回転する高さの半分の歯車が中心
-                                this.size * -0.5,
-                                this.size, this.size);
-            context.restore();// セーブする
-        }
-    }
-    */
 
     // プレイヤー
     class Player {
@@ -141,14 +79,11 @@ window.addEventListener('load', function(){
             this.x = 20;
             this.y = 100;
 
-            //this.frameX = 0; // スプライトシートを循環する水平方向X[0]が行を決定
-            //this.frameY = 0; // スプライトシートを循環する水平方向Y[0]が列を決定
-            //this.maxFrame = 37; // スプライトシートのフレーム37
-
-            // プレイヤー垂直速度初期値
+            // プレイヤー速度初期値
             this.speedY = 0;
+            this.speedX = 0;
             // フィールドに置いた値をY速度に「this.maxSpeed」持っていくテクニック
-            this.maxSpeed = 3;
+            this.maxSpeed = 9;
             // 発射物の配列
             this.projectiles = [];
 
@@ -156,21 +91,31 @@ window.addEventListener('load', function(){
             this.powerUp = false; // 最初からパワーアップしない
             this.powerUpTimer = 0;
             this.powerUpLimit = 10000;
-
-            //this.image = document.getElementById('player');
         }
-        // プレイヤーの垂直方向のY速度
+        // プレイヤーの垂直方向のY.X速度
         update(deltaTime){
             if (this.game.keys.includes('ArrowUp')) this.speedY = -this.maxSpeed;
             else if (this.game.keys.includes('ArrowDown')) this.speedY = this.maxSpeed;
             else this.speedY = 0;
             this.y += this.speedY;
 
-            // プレイヤーが画面上下端までいけるようにする
+
+            if (this.game.keys.includes('ArrowLeft')) this.speedX = -this.maxSpeed;
+            else if (this.game.keys.includes('ArrowRight')) this.speedX = this.maxSpeed;
+            else this.speedX = 0;
+            this.x += this.speedX;
+
+            // プレイヤーが画面上下端までいけないようにする
             if(this.y > this.game.height - this.height * 0.5)
             this.y = this.game.height - this.height *0.5;
             else if (this.y < -this.height *0.5)
             this.y = -this.height * 0.5;
+
+            // プレイヤーが画面左右端までいけいようにする
+            if(this.x > this.game.width - this.width * 0.5)
+            this.x = this.game.width - this.width *0.5;
+            else if (this.x < -this.width *0.5)
+            this.x = -this.width * 0.5;
 
             // 発射物の配列を取り出す＞呼び出す
             this.projectiles.forEach(projectile => {
@@ -179,15 +124,7 @@ window.addEventListener('load', function(){
             // filter()で通過するすべての要素に新しい配列を提供する
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
 
-            /*
-            // スプライトをアニメーションフレームにする
-            // maxFrame37まで＋＋して、それ以外は「0」に戻す→forで繰り返してない
-            if(this.frameX < this.maxFrame){
-                this.frameX++;
-            } else {
-                this.frameX = 0;
-            }
-            */
+
             // プレイヤーのpowerアップ
             if(this.powerUp){
                 if(this.powerUpTimer > this.powerUpLimit){
@@ -213,20 +150,12 @@ window.addEventListener('load', function(){
             this.projectiles.forEach(projectile => {
                 projectile.draw(context);
             });
-
-            // プレイヤー画像を持ってくる
-            //context.drawImage(this.image, this.x, this.y);// 1枚シート全体
-            //context.drawImage(this.image, this.x, this.y, this.width, this.height); //1枚シートを120×190の大きさでを座標20．100から表示
-            //context.drawImage(this.image, sx, sy, sw, sh, this.x, this.y, this.width, this.height); sx,sy,sw,shの紹介
-            //context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height,
-                //this.width, this.height, this.x, this.y, this.width, this.height);
-            // 発射物の配列を取り出す＞呼び出す
         }
         // 準備した発射物を攻撃できる
         shootTop(){
             // 弾薬を無制限で打てないようにする
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 30 ));
+                this.projectiles.push(new Projectile(this.game, this.x + 80, this.y + 30));
                 //console.log(this.projectiles);
                 this.game.ammo--;
             }
@@ -236,10 +165,13 @@ window.addEventListener('load', function(){
         // パワーアップして、下からも打てる
         shootBottom(){
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x + 157, this.y + 51 ));
+                //this.projectiles.push(new Projectile(this.game, this.x + 57, this.y + 151));
+                //this.projectiles.push(new Projectile(this));
             }
-            //console.log(this.projectiles);
+            this.projectiles.push(new Projectile(game, x + 57, y + 151, speed +8));
         }
+
+            //console.log(this.projectiles);
         // プレイヤーのpowerアップ
         enterPowerUp(){
             this.powerUpTimer = 0;
@@ -430,70 +362,6 @@ window.addEventListener('load', function(){
         }
     }
 
-    /*
-    // 親の爆発クラス
-    class Explosion {
-        constructor(game, x, y){
-            this.game = game;
-            //this.x = x;
-            //this.y = y;
-            this.frameX = 0;
-            this.spriteWidth = 200;
-            this.spriteHight = 200;
-            this.width = this.spriteWidth;
-            this.height = this.spriteHight;
-            this.x = x - this.width * 0.5;
-            this.y = y - this.height * 0.5;
-            this.fps = 30;
-            this.timer = 0;
-            this.interval = 1000/this.fps;
-            this.markedForDeletion = false;
-            this.maxFrame = 8;
-        }
-        update(deltaTime){
-            this.x -= this.game.speed // 爆風のスクロール
-            if(this.timer > this.interval){
-                this.frameX++;
-                this.timer = 0;
-            } else {
-                this.timer += deltaTime;
-            }
-            // 爆風配列に、爆風がたまり続けるため
-            if(this.frameX > this.maxFrame) this.markedForDeletion = true;
-        }
-        draw(context){
-            context.drawImage(this.image, this.frameX * this.spriteWidth, 0,
-                 this.spriteWidth, this.spriteHight, this.x, this.y, this.width, this.height);
-        }
-    }
-
-    // 子の「煙」の爆発クラス
-    class SmokeExplosion extends Explosion{
-        constructor(game, x, y){
-            super(game, x, y);
-            this.image = document.getElementById('smokeExplosion');
-            //this.spriteWidth = 200;
-            //this.width = this.spriteWidth;
-            //this.height = this.spriteHight;
-            //this.x = x - this.width * 0.5;
-            //this.y = y - this.height * 0.5;
-        }
-    }
-
-    // 子の「火」の爆発クラス
-    class FireExplosion extends Explosion{
-        constructor(game, x, y){
-            super(game, x, y);
-            this.image = document.getElementById('fireExplosion');
-            //this.spriteWidth = 200;
-            //this.width = this.spriteWidth;
-            //this.height = this.spriteHight;
-            //this.x = x - this.width * 0.5;
-            //this.y = y - this.height * 0.5;
-        }
-
-    }
-    */
 
     // 弾薬数タイマーやカウントダウンを表示
     class UI {
