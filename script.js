@@ -197,6 +197,9 @@ window.addEventListener('load', function(){
             //塗りつぶしと同じ考え
             context.fillStyle = 'red';
             context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+            //context.arc(this.x, this.y, this.width, this.height * Math.PI, false);
+            //context.arcTo(this.x, this.y, this.width, this.height * Math.PI, false);
+            //context.fill();//→うまくできない
 
             //四角枠デバックデバッグモードを敵に追加(当たり判定)
             if(this.game.debug)
