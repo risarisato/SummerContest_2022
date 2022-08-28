@@ -43,15 +43,14 @@ window.addEventListener('load', function(){
 
     // レーザー攻撃:発射物の準備
     class Projectile {
-        // コンストラクタ＞3つの引数が必要
-        //speed = 1;
+        // コンストラクタ＞newで実行され実行される
         constructor(game, x, y, speed){
             this.game = game;
             this.x = x;
             this.y = y;
-            this.width = 10;
-            this.height = 3;
             this.speed = speed;
+            this.width = 10;
+            this.height = 3 ;
             this.markedForDeletion = false;
         }
         update(){
@@ -173,7 +172,14 @@ window.addEventListener('load', function(){
             if (this.game.ammo > 0){
                 this.projectiles.push(new Projectile(this.game, this.x - 10, this.y, this.speed = 17));
                 this.projectiles.push(new Projectile(this.game, this.x - 10,this.y + 70, this.speed = 6));
-                this.projectiles.push(new Projectile(this.game, this.x - 10,this.y + 70, this.x += this.speed, this.y += this.speed ));
+                this.projectiles.push(new Projectile(
+                    //super(game, x, y, speed)
+                    this.game,
+                    //this.x - 10,
+                    //this.y + 70,
+                    this.x += this.speed,
+                    this.y += this.speed
+                    ));
             }
         }
 
