@@ -44,13 +44,14 @@ window.addEventListener('load', function(){
     // レーザー攻撃:発射物の準備
     class Projectile {
         // コンストラクタ＞3つの引数が必要
+        //speed = 1;
         constructor(game, x, y, speed){
             this.game = game;
             this.x = x;
             this.y = y;
             this.width = 10;
             this.height = 3;
-            this.speed = 7;
+            this.speed = speed;
             this.markedForDeletion = false;
         }
         update(){
@@ -142,7 +143,7 @@ window.addEventListener('load', function(){
             //x座標, y座標, 半径, 開始位置, 終了位置, 時計回りかどうか
             //context.arc(this.x, this.y, this.width, this.height * Math.PI, false);
             //context.arcTo(this.x, this.y, this.width, this.height * Math.PI, false);
-            //context.fill();→うまくできない
+            //context.fill();//→うまくできない
 
             //デバッグモードの枠線
             if(this.game.debug)
@@ -156,7 +157,13 @@ window.addEventListener('load', function(){
         shootTop(){
             // 弾薬を無制限で打てないようにする
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x + 20, this.y + 30));
+                //this.projectiles.push(new Projectile(this.game, this.x + 20, this.y));
+                this.projectiles.push(new Projectile(
+                    this.game,
+                    this.x + 20,
+                    this.y + 30,
+                    this.speed = 7
+                    ));
                 this.game.ammo--;
             }
             if (this.powerUp) this.shootBottom();
@@ -164,8 +171,9 @@ window.addEventListener('load', function(){
         // パワーアップして、3連打になる
         shootBottom(){
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y));
-                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y + 70));
+                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y, this.speed = 17));
+                this.projectiles.push(new Projectile(this.game, this.x - 10,this.y + 70, this.speed = 6));
+                this.projectiles.push(new Projectile(this.game, this.x - 10,this.y + 70, this.x += this.speed, this.y += this.speed ));
             }
         }
 
@@ -213,13 +221,25 @@ window.addEventListener('load', function(){
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
-        constructor(game){
-            super(game);
+        //setColor(Color,black)
+        //color = 'black';
+        //fillStyle = 'black';
+        //constructor(game, setColor, context, fillStyle, color, fillRect ,black){
+            //super(game, setColor, context, fillStyle, color, fillRect ,black);
+        //constructor(game, ontext = 'black'){
+            constructor(game, ontext = 'black'){
+            super(game, );
             this.width = 100; //大きさは調整したときの残り
             this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            this.lives = 2;
+            this.lives = 100;
             this.score = this.lives;
+            //this.setColor = black;
+            //this.fillRect = black;
+            //this.ontext = ontext;
+            //this.context = black;
+            //this.color = black;
+            //this.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
         }
     }
     // 継承関係の敵キャラクター(Angler2)オーバライド
@@ -374,7 +394,7 @@ window.addEventListener('load', function(){
             //this.explosions = [];// 敵を倒した爆発
 
             this.enemyTimer = 0;// 敵の初期時間は0
-            this.enemyInterval = 1500;// 敵の出現頻度
+            this.enemyInterval = 750;// 敵の出現頻度
 
             this.ammo = 20;// 弾薬数初期値
             this.maxAmmo = 50; // 弾薬最大値
