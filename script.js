@@ -73,8 +73,8 @@ window.addEventListener('load', function(){
         constructor(game){
             this.game = game;
             // プレイヤーの大きさ
-            this.width = 40;
-            this.height = 70;
+            this.width = 20;
+            this.height = 35;
             // プレイヤー位置
             this.x = 80;
             this.y = 200;
@@ -83,7 +83,7 @@ window.addEventListener('load', function(){
             this.speedY = 0;
             this.speedX = 0;
             // プレイヤー速度
-            this.maxSpeed = 5;
+            this.maxSpeed = 7;
             // 発射物の配列
             this.projectiles = [];
 
@@ -165,8 +165,8 @@ window.addEventListener('load', function(){
                 this.projectiles.push(new Projectile(
                     this.game,
                     this.x + 20,
-                    this.y + 30,
-                    this.speed = 7
+                    this.y + 15,
+                    this.speed = 9
                     ));
                 this.game.ammo--;
             }
@@ -175,16 +175,8 @@ window.addEventListener('load', function(){
         // パワーアップして、3連打になる
         shootBottom(){
             if (this.game.ammo > 0){
-                this.projectiles.push(new Projectile(this.game, this.x - 10, this.y, this.speed = 17));
-                this.projectiles.push(new Projectile(this.game, this.x - 10,this.y + 70, this.speed = 6));
-                this.projectiles.push(new Projectile(
-                    //super(game, x, y, speed)
-                    this.game,
-                    //this.x - 10,
-                    //this.y + 70,
-                    this.x += this.speed,
-                    this.y += this.speed
-                    ));
+                this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
+                this.projectiles.push(new Projectile(this.game, this.x - 5,this.y + 30, this.speed = 17));
             }
         }
 
@@ -204,9 +196,11 @@ window.addEventListener('load', function(){
     class Enemy {
         constructor(game){
             this.game = game;
-            this.x = this.game.width;// 敵はX軸方向から来襲
-            this.speedX = Math.random() * -1.5  -6.5;
+            this.x = this.game.width;// 敵クラスはX軸方向から来襲
+            this.speedX = Math.random() * -1.5  -5.5; //出現率をx軸方向から来襲
             this.markedForDeletion = false;// レーザに当たるとfalse
+            this.fillStyle = null;
+            //this.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
         }
         update(){// 敵の水平X軸を調整する
             this.x += this.speedX - this.game.speed;
@@ -232,25 +226,16 @@ window.addEventListener('load', function(){
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
-        //setColor(Color,black)
-        //color = 'black';
-        //fillStyle = 'black';
-        //constructor(game, setColor, context, fillStyle, color, fillRect ,black){
-            //super(game, setColor, context, fillStyle, color, fillRect ,black);
-        //constructor(game, ontext = 'black'){
-            constructor(game, ontext = 'black'){
-            super(game, );
+            constructor(game){
+            super(game);
             this.width = 100; //大きさは調整したときの残り
             this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            this.lives = 100;
+            this.lives = 10;
             this.score = this.lives;
-            //this.setColor = black;
-            //this.fillRect = black;
-            //this.ontext = ontext;
-            //this.context = black;
-            //this.color = black;
-            //this.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+            //this.fillStyle = 'red';
+            //this.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+            //this.ctx.fillStyle = 'red';
         }
     }
     // 継承関係の敵キャラクター(Angler2)オーバライド
@@ -267,8 +252,9 @@ window.addEventListener('load', function(){
     }
     // 継承関係の敵キャラクター(LuckyFish)オーバライド
     class LuckyFish extends Enemy {
-        constructor(game){
+        constructor(game, color){
             super(game);
+            this.color = color;
             this.width = 99 * 0.5;
             this.height = 95 * 0.5;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
@@ -390,9 +376,6 @@ window.addEventListener('load', function(){
             this.width = width;
             this.height = height;
 
-            // レイヤー設定したバックグラウンドをオブジェクト化
-            //this.background = new Background(this);
-
             this.player = new Player(this);
             this.input = new InputHandler(this)
 
@@ -401,8 +384,6 @@ window.addEventListener('load', function(){
 
             //敵の出現は同じもの使用する「弾薬の間隔」があるので
             this.enemies = [];// 敵クラスの配列を宣言
-            //this.particles = [];// 敵を倒した残骸歯車
-            //this.explosions = [];// 敵を倒した爆発
 
             this.enemyTimer = 0;// 敵の初期時間は0
             this.enemyInterval = 750;// 敵の出現頻度
@@ -449,13 +430,6 @@ window.addEventListener('load', function(){
                 // 当たり判定、自機プレイヤーと衝突
                 if (this.checkCollsion(this.player, enemy)){
                     enemy.markedForDeletion = true;
-                    // 敵を倒すと爆風がでる
-                    //this.addExplosion(enemy);
-                    // 自機とあたり、敵の残骸歯車が3(enemy.score)個でる
-                    //for(let i = 0; i < enemy.score; i++){
-                    //    this.particles.push(new Particle(this, enemy.x + enemy.width
-                    //    * 0.5, enemy.y + enemy.height * 0.5));
-                    //}
                     // luckyfishと衝突判定でpowerアップする
                     //if(enemy.type = 'lucky') this.player.enterPowerUp();
                     // ラッキーフィッシュの長方形内に別の敵がいると判定できる
@@ -468,10 +442,6 @@ window.addEventListener('load', function(){
                     if (this.checkCollsion(projectile, enemy)){
                         enemy.lives--;
                         projectile.markedForDeletion = true;
-
-                        // 敵に発射物レーザを当てると歯車残骸が1個でる＞＞出さない
-                        //this.particles.push(new Particle(this, enemy.x + enemy.width
-                        //* 0.5, enemy.y + enemy.height * 0.5));
 
                         // 敵を発射物レーザーで破壊したとき10(enemy.score)個の残骸→自爆やレーザで歯車残骸の数を変更
                         if (enemy.lives <= 0){
@@ -490,14 +460,8 @@ window.addEventListener('load', function(){
                                     enemy.y + Math.random() * enemy.height + 0.5));
                                 }
                             }
-
-
-                            // 発射物レーターにあたり、敵の残骸歯車が10個でる
-                            //for(let i = 0; i < 10; i++){
-                            //this.particles.push(new Particle(this, enemy.x +
-                            //enemy.width * 0.5, enemy.y + enemy.height * 0.5));
-                            //this.score+= enemy.score;// カウント完了後に敵を倒しても点数加算される
-                            if (!this.gameOver) this.score += enemy.score;// カウント完了後に敵を倒しても点数加算されない
+                            // カウント完了後に敵を倒しても点数加算されない
+                            if (!this.gameOver) this.score += enemy.score;
                             // コメント入れれば＞＞勝利スコアになればゲームオーバーになる
                             if (this.score > this.winningScore) this.gameOver = true;
                         }
@@ -513,32 +477,22 @@ window.addEventListener('load', function(){
                 this.enemyTimer += deltaTime;
             }
         }
-        // 描く順番に注意！上書き：背景＞プレイヤー＝UI＝敵＞レイヤー4
+        // 描く順番に注意！上書き
         draw(context){
-            // ①レイヤー設定したバックグラウンドを描く
-            //this.background.draw(context);
-            // ②弾薬表示の呼び出し
-            this.player.draw(context);
             // ③プレイヤーの呼び出し
-            this.ui.draw(context);
-            // drawメソッド内でparticle.draw(context)で歯車の配列を渡す
-            //this.particles.forEach(particle => particle.draw(context));
-            // 敵クラスの呼び出し
+            this.player.draw(context);
+            // ②敵クラスの呼び出し
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             });
-            // 爆風クラスの呼び出し
-            //this.explosions.forEach(explosion => {
-            //    explosion.draw(context);
-            }
-
-            // 最前列にレイヤー4を呼び出す
-            //this.background.layer4.draw(context);
+            // ①弾薬表示が最後にした＞見えないから
+            this.ui.draw(context);
+        }
 
         // 親super敵クラスの子クラスを呼ぶnew
         addEnemy(){
             const randomize = Math.random();
-            // 0.3のAngler1を出現させて
+            // 0.3のAngler1を出現させて「this」敵をそのまま呼び出す！！
             if(randomize < 0.3) this.enemies.push(new Angler1(this));
             // 0.6はAngler2になる
             else if (randomize < 0.6)this.enemies.push(new Angler2(this));
@@ -547,19 +501,6 @@ window.addEventListener('load', function(){
             else this.enemies.push(new LuckyFish(this));
             // console.log(this.enemies);
         }
-        /* 爆風と火の呼び出し＞ランダム
-        addExplosion(enemy){
-            const randomize = Math.random();
-            if(randomize < 0.5) {
-                this.explosions.push(new SmokeExplosion
-                    (this, enemy.x + enemy.width * 0.5, enemy.y + enemy.height * 0.5));
-            } else {
-                this.explosions.push(new FireExplosion
-                    (this, enemy.x + enemy.width * 0.5, enemy.y + enemy.height * 0.5));
-            }
-            //console.log(this.explosions);
-        }
-        */
         // 当たり判定、長方形(プレイヤー)の大きさに含まれるかどうか
         checkCollsion(recr1, rect2){
             return(     recr1.x < rect2.x + rect2.width &&
