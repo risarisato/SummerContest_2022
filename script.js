@@ -14,16 +14,17 @@ window.addEventListener('load', function(){
             this.game = game;
             window.addEventListener('keydown', e => {
                 // if(e.key === 'ArrowUp'){ ['ArrowUp', 'ArrowUp'…上矢印の長押しに対応しない
-                if((    (e.key === 'ArrowUp') ||
-                        (e.key === 'ArrowDown') ||
-                        (e.key === 'ArrowLeft') ||
-                        (e.key === 'ArrowRight')
+                if((    (e.key === 'ArrowUp') || (e.key === 'w') ||
+                        (e.key === 'ArrowDown') || (e.key === 's') ||
+                        (e.key === 'ArrowLeft') || (e.key === 'a') ||
+                        (e.key === 'ArrowRight') || (e.key === 'd')
                 ) && this.game.keys.indexOf(e.key) === -1){
                     this.game.keys.push(e.key);
                 // 入力操作にスペースを追加して攻撃
                 } else if ( e.key === ' '){
                     this.game.player.shootTop();
-                } else if ( e.key === 'd'){
+                // デバックモード
+                } else if ( e.key === '+'){
                     this.game.debug = !this.game.debug;
                 }
                 //console.log(this.game.keys);
@@ -94,13 +95,17 @@ window.addEventListener('load', function(){
         // プレイヤーの垂直方向のY速度
         update(deltaTime){
             if (this.game.keys.includes('ArrowUp')) this.speedY = -this.maxSpeed;
+            else if (this.game.keys.includes('w')) this.speedY = -this.maxSpeed;
             else if (this.game.keys.includes('ArrowDown')) this.speedY = this.maxSpeed;
+            else if (this.game.keys.includes('s')) this.speedY = this.maxSpeed;
             else this.speedY = 0;
             this.y += this.speedY;
 
             // プレイヤーの垂直方向のX速度
             if (this.game.keys.includes('ArrowLeft')) this.speedX = -this.maxSpeed;
+            else if (this.game.keys.includes('a')) this.speedX = -this.maxSpeed;
             else if (this.game.keys.includes('ArrowRight')) this.speedX = this.maxSpeed;
+            else if (this.game.keys.includes('d')) this.speedX = this.maxSpeed;
             else this.speedX = 0;
             this.x += this.speedX;
 
