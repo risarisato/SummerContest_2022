@@ -199,20 +199,16 @@ window.addEventListener('load', function(){
             this.x = this.game.width;// 敵クラスはX軸方向から来襲
             this.speedX = Math.random() * -1.5  -5.5; //出現率をx軸方向から来襲
             this.markedForDeletion = false;// レーザに当たるとfalse
-            this.fillStyle = null;
-            //this.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
         }
         update(){// 敵の水平X軸を調整する
             this.x += this.speedX - this.game.speed;
+            //this.y += this.speedX * 0.08;
             if(this.x + this.width < 0) this.markedForDeletion = true;
         }
         draw(context){
             //塗りつぶしと同じ考え
             context.fillStyle = 'red';
             context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
-            //context.arc(this.x, this.y, this.width, this.height * Math.PI, false);
-            //context.arcTo(this.x, this.y, this.width, this.height * Math.PI, false);
-            //context.fill();//→うまくできない
 
             //四角枠デバックデバッグモードを敵に追加(当たり判定)
             if(this.game.debug)
@@ -226,16 +222,21 @@ window.addEventListener('load', function(){
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
-            constructor(game){
+            //fillStyle = 'black';
+            constructor(game, context, fillStyle){
             super(game);
+            this.context = context;
+            this.fillStyle = fillStyle;
             this.width = 100; //大きさは調整したときの残り
             this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
             this.lives = 10;
             this.score = this.lives;
-            //this.fillStyle = 'red';
+            //this.ctx.fillStyle = 'red';
             //this.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
             //this.ctx.fillStyle = 'red';
+            //this.x += this.speedX - this.game.speed;
+            //this.y += this.speedX * 0.08;
         }
     }
     // 継承関係の敵キャラクター(Angler2)オーバライド
@@ -319,17 +320,6 @@ window.addEventListener('load', function(){
             context.fillText('Score: ' + this.game.score, 20, 40);
             context.fillText('弾数: ', 150, 40);
 
-
-            /* レーザ発射物の残数
-            context.fillStyle = this.color;
-            if(this.game.player.powerUp) context.fillStyle = '#efffbd';// パワーアップ時の表示の色
-            for (let i = 0; i < this.game.ammo; i++){
-                // (20, 50)開始位置です。幅は 3 で高さは 20 です。
-                // (20 + 5 * i), (50), (3), (20)→カンマ区切り
-                context.fillRect( 20 + 5 * i, 50, 3, 20);
-                //context.fillText(i , 180, 40);→残数の表示がおかしい
-            }
-            */
             // ゲームカウントダウン
             const formattedTime = (this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
             context.fillText('生存時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
@@ -386,7 +376,7 @@ window.addEventListener('load', function(){
             this.enemies = [];// 敵クラスの配列を宣言
 
             this.enemyTimer = 0;// 敵の初期時間は0
-            this.enemyInterval = 750;// 敵の出現頻度
+            this.enemyInterval = 550;// 敵の出現頻度
 
             this.ammo = 20;// 弾薬数初期値
             this.maxAmmo = 50; // 弾薬最大値
@@ -424,33 +414,31 @@ window.addEventListener('load', function(){
                 this.ammoTimer += deltaTime;
             }
 
-            // 敵クラスとレーザーの関係
+            // 敵クラス.forEach(enemy => { を使った関数
+            // 敵の動きx軸
             this.enemies.forEach(enemy => {
                 enemy.update();
                 // 当たり判定、自機プレイヤーと衝突
                 if (this.checkCollsion(this.player, enemy)){
                     enemy.markedForDeletion = true;
                     // luckyfishと衝突判定でpowerアップする
-                    //if(enemy.type = 'lucky') this.player.enterPowerUp();
-                    // ラッキーフィッシュの長方形内に別の敵がいると判定できる
+                    // ラッキーフィッシュの長方形内に別の敵がいるが、厳格に===判定できる
                     if(enemy.type === 'lucky') this.player.enterPowerUp();
                     // ラッキーフィッシュ以外と当たると減点
                     else if (!this.gameOver) this.score--;
+                    //this.score = this.lives;
                 }
-                // 当たり判定、レーザ発射物と敵
+                // 当たり判定、レーザ発射物と敵HP
                 this.player.projectiles.forEach(projectile => {
+                    // checkCollsionがプレイヤーと敵の四角形の関数
                     if (this.checkCollsion(projectile, enemy)){
                         enemy.lives--;
                         projectile.markedForDeletion = true;
 
-                        // 敵を発射物レーザーで破壊したとき10(enemy.score)個の残骸→自爆やレーザで歯車残骸の数を変更
+                        // 敵HPを発射物レーザーで0にしたとき
                         if (enemy.lives <= 0){
-                            for(let i = 0; i < enemy.score; i++){
-                                //this.particles.push(new Particle(this, enemy.x +
-                                     //enemy.width * 0.5, enemy.y + enemy.height * 0.5));
-                            }
                             enemy.markedForDeletion = true;
-                            //this.addExplosion(enemy);
+
                             // 敵が大型のhivewhaleに発射物レーザで倒したら、droneが5匹でる
                             if(enemy.type === 'hive'){
                                 for(let i = 0; i < 5; i++){
@@ -468,7 +456,7 @@ window.addEventListener('load', function(){
                     }
                 })
             });
-            // filterはレーザの攻撃で、敵がどうなったかフィルター、敵インターバル
+            // filterはレーザの攻撃で、敵がどうなったかフィルター、敵のインターバル
             this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
             if(this.enemyTimer > this.enemyInterval && !this.gameOver){
                 this.addEnemy();
@@ -489,11 +477,16 @@ window.addEventListener('load', function(){
             this.ui.draw(context);
         }
 
-        // 親super敵クラスの子クラスを呼ぶnew
+        // 親super敵クラスの子クラスを呼ぶnewコンストラクタで自分自身
         addEnemy(){
             const randomize = Math.random();
             // 0.3のAngler1を出現させて「this」敵をそのまま呼び出す！！
-            if(randomize < 0.3) this.enemies.push(new Angler1(this));
+            if(randomize < 0.3) this.enemies.push(new Angler1(
+                this,
+                //this.game,
+                //ctx.fillStyle = 'black',
+                //ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9)
+                ));
             // 0.6はAngler2になる
             else if (randomize < 0.6)this.enemies.push(new Angler2(this));
             // 0.8はHivewhaleになる
