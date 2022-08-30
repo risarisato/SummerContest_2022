@@ -255,6 +255,8 @@ window.addEventListener('load', function(){
             }
         }
     }
+
+
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
@@ -289,9 +291,8 @@ window.addEventListener('load', function(){
     }
     // 継承関係の敵キャラクター(LuckyFish)オーバライド
     class LuckyFish extends Enemy {
-        constructor(game, color){
+        constructor(game){
             super(game);
-            this.color = color;
             this.width = 99 * 0.5;
             this.height = 95 * 0.5;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
