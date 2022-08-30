@@ -5,7 +5,7 @@ window.addEventListener('load', function(){
     const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
     // cssで固定画面サイズに対応させているs
-    canvas.width =  1000;
+    canvas.width = 1000;
     canvas.height = 500;
 
     // キーボード操作入力
@@ -206,7 +206,7 @@ window.addEventListener('load', function(){
                 }
                 )));
                     console.log();
-                  */  
+                  */
             }
         }
 
@@ -343,10 +343,10 @@ window.addEventListener('load', function(){
         }
         // 弾薬・スコア点数を描く
         draw(context){
-            context.save();// スコープ内のcontextだけ影を開始
+            context.save();// スコープ内のcontext影や色をセーブ
             context.fillStyle = this.color;
-            context.shadowOffsetX = 2;//影をつけている
-            context.shadowOffsetY = 2;//影をつけている
+            context.shadowOffsetX = 1;//影をつけている
+            context.shadowOffsetY = 1;//影をつけている
             context.shadowColor = 'black';
 
             // スコア点数表示
@@ -354,10 +354,15 @@ window.addEventListener('load', function(){
             context.font = this.fontSize + 'px ' + this.fontFamily;
             context.fillText('点数: ' + this.game.score, 20, 40);
             context.fillText('弾数: ', 210, 40);
+            context.fillText('【操作】wasd↑←↓→ space +', 20, 485);
 
             // ゲームカウントダウン
             const formattedTime = (30 - this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
             context.fillText('残り時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
+
+            //let how_to = '【操作】wasd↑←↓→ space +';
+            //context.font = '10px ' + this.fontFamily;
+            //context.fillText(how_to, this.game.width * 0.5, this.game.height * 0.5 - 20);
 
             // ゲームが終わった時のメッセージ
             if (this.game.gameOver){
@@ -441,7 +446,7 @@ window.addEventListener('load', function(){
             this.enemies.forEach(enemy => {
                 enemy.update();
                 // 当たり判定、自機プレイヤーと衝突
-                if (this.checkCollsion(this.player, enemy)){
+                if (this.hitCheck(this.player, enemy)){
                     enemy.markedForDeletion = true;
                     // SubPowerと衝突判定でpowerアップする
                     // ラッキーフィッシュの長方形内に別の敵がいるが、厳格に===判定できる
@@ -452,8 +457,8 @@ window.addEventListener('load', function(){
                 }
                 // 当たり判定、レーザ発射物と敵HP
                 this.player.projectiles.forEach(projectile => {
-                    // checkCollsionがプレイヤーと敵の四角形の関数
-                    if (this.checkCollsion(projectile, enemy)){
+                    // hitCheckがプレイヤーと敵の四角形の関数
+                    if (this.hitCheck(projectile, enemy)){
                         enemy.lives--;
                         projectile.markedForDeletion = true;
 
@@ -511,7 +516,7 @@ window.addEventListener('load', function(){
             // console.log(this.enemies);
         }
         // 当たり判定、長方形(プレイヤー)の大きさに含まれるかどうか
-        checkCollsion(recr1, rect2){
+        hitCheck(recr1, rect2){
             return(     recr1.x < rect2.x + rect2.width &&
                         recr1.x + recr1.width > rect2.x &&
                         recr1.y < rect2.y + rect2.height &&
