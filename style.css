@@ -18,3 +18,8 @@
     max-width: 100%;
     max-height: 100%;
 }
+
+/* htmlで表示されるpngを表示させない */
+#power {
+    display: none;
+}

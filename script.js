@@ -54,6 +54,7 @@ window.addEventListener('load', function(){
             this.height = 3 ;
             this.markedForDeletion = false;
         }
+        /*
         //レーザの距離はwitdth幅*0.95まで
         way_up(){
             this.x += this.speed;
@@ -65,20 +66,13 @@ window.addEventListener('load', function(){
             this.y += this.speed; //下斜めにレーザー
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
+        */
         update(){
             this.x += this.speed; //直進方向にレーザー
             //this.y += this.speed; //斜めにレーザー
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
 
-        /*
-        update(x, y, speed){
-            this.x = x += this.speed;
-            this.y = y += this.speed;
-            this.speed = speed;
-            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
-        }
-        */
         draw(context){
             //canvasで描いたもレーザ
             context.fillStyle = 'yellow';
@@ -197,9 +191,9 @@ window.addEventListener('load', function(){
             if (this.game.ammo > 0){
                 //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
                 this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
-                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17));
+                this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17));
                 //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17, new update(this.game, update(this.bottom))));
-                
+                /*
                 this.projectiles.push(new Projectile(
                     this.game,
                     this.x - 5,
@@ -212,7 +206,7 @@ window.addEventListener('load', function(){
                 }
                 )));
                     console.log();
-                    
+                  */  
             }
         }
 
@@ -244,11 +238,19 @@ window.addEventListener('load', function(){
         draw(context){
             //塗りつぶしと同じ考え
             context.fillStyle = 'red';
-            context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+            context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9)
+            //context.drawImage(this.image, this.x, this.y)
+            //context.drawImage(this.image, this.sx, this.sy, this.sw, this.sh, this.dx, this.dy, this.dw, this.dh)
+            //context.drawImage(bind(this.image, th//is.x, this.y));
+            //context.drawImage(this.image, this.x, this.y);
+            //if(context.drawImage(this.image, this.x, this.y));
+            //else if ();
 
             //四角枠デバックデバッグモードを敵に追加(当たり判定)
             if(this.game.debug)
             context.strokeRect(this.x - 5, this.y - 5, this.width, this.height);
+
+
             if(this.game.debug){
             context.font = '20px Helvatica';
             context.fillText(this.lives, this.x, this.y);
@@ -259,77 +261,73 @@ window.addEventListener('load', function(){
 
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
-    class Angler1 extends Enemy {
-            //fillStyle = 'black';
-            constructor(game, context, fillStyle){
+    class Sub1 extends Enemy {
+            constructor(game){
             super(game);
-            this.context = context;
-            this.fillStyle = fillStyle;
+            //this.context = context;
+            //this.fillStyle = fillStyle;
             this.width = 100; //大きさは調整したときの残り
             this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
             this.lives = 10;
             this.score = this.lives;
-            //this.ctx.fillStyle = 'red';
-            //this.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
-            //this.ctx.fillStyle = 'red';
-            //this.x += this.speedX - this.game.speed;
-            //this.y += this.speedX * 0.08;
         }
     }
-    // 継承関係の敵キャラクター(Angler2)オーバライド
+    // 継承関係の敵キャラクター(Sub2)オーバライド
     // 親クラスで書いているので楽なる
-    class Angler2 extends Enemy {
+    class Sub2 extends Enemy {
         constructor(game){
             super(game);
             this.width = 213;
             this.height = 165;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            this.lives = 3;
+            this.lives = 4;
             this.score = this.lives;
         }
     }
-    // 継承関係の敵キャラクター(LuckyFish)オーバライド
-    class LuckyFish extends Enemy {
+    // 継承関係の敵キャラクター(SubPower)オーバライド
+    class SubPower extends Enemy {
         constructor(game){
             super(game);
             this.width = 99 * 0.5;
             this.height = 95 * 0.5;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            //this.image = document.getElementById('lucky');
-            this.frameY = Math.floor(Math.random() * 2);
+            //this.image = document.getElementById.bind('power');
+            this.image = document.getElementById('power');
+            //context.drawImage(this.image, this.x, this.y);
+            //this.context.drawImage(this.image, this.x, this.y);
+            //this.drawImage(this.image, this.x, this.y);
+            //this.frameY = Math.floor(Math.random() * 2);
             this.lives = 3;
             this.score = 7;
-            this.type = 'lucky';
-        }
+            this.type = 'powers';
+        } //bind(this)
     }
-    // 継承関係で大型タイプのhivewhaleをオーバライド
-    class Hivewhale extends Enemy {
+    // 継承関係で大型タイプのBossをオーバライド
+    class Boss extends Enemy {
         constructor(game){
             super(game);
             this.width = 400 * 0.9;
             this.height = 227 * 0.9;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
-            //this.image = document.getElementById('hivewhale');
+            //this.image = document.getElementById('Boss');
             this.lives = 20;
             this.score = this.lives;
-            this.type = 'hive';
+            this.type = 'boss';
             this.speed = Math.random() * -1.2 -0.2;
         }
     }
-    // 継承関係で大型タイプ敵を破壊したあとに小型のDroneをオーバライド
-    class Drone extends Enemy {
+    // 継承関係で大型タイプ敵を破壊したあとに小型のSubBossをオーバライド
+    class SubBoss extends Enemy {
         constructor(game, x, y){
             super(game);
             this.width = 115;
             this.height = 95;
             this.x = x;
             this.y = y;
-            //this.image = document.getElementById('drone');
-            this.frameY = Math.floor(Math.random() * 2);
             this.lives = 3;
             this.score = this.lives;
-            this.type = 'drone';
+            this.type = 'SubBoss';
             this.speed = Math.random() * -4.2 -0.5;
         }
     }
@@ -354,34 +352,22 @@ window.addEventListener('load', function(){
             // スコア点数表示
             // this.fontSize + 'px_' スペースがないと変数を読み込まない
             context.font = this.fontSize + 'px ' + this.fontFamily;
-            context.fillText('Score: ' + this.game.score, 20, 40);
-            context.fillText('弾数: ', 150, 40);
+            context.fillText('点数: ' + this.game.score, 20, 40);
+            context.fillText('弾数: ', 210, 40);
 
             // ゲームカウントダウン
-            const formattedTime = (this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
-            context.fillText('生存時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
+            const formattedTime = (30 - this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
+            context.fillText('残り時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
 
             // ゲームが終わった時のメッセージ
             if (this.game.gameOver){
                 context.textAlin = 'center';
-                let message1;
-                let message2;
-                let message3;
-                if (this.game.score > this.game.winningScore){
-                    message1 = 'You win!';
-                    message2 = '点数：' + this.game.score + 'です！';
-                    message3 = '生存時間は：' + formattedTime + 'です！';
-                } else {
-                    message1 = 'You lose!';
-                    message2 = '点数：' + this.game.score + 'です！';
-                    message3 = '生存時間は：' + formattedTime + 'です！';
-                }
+                let message1 = 'おしまい。';
+                let message2 = '点数：' + this.game.score + 'です！';
                 context.font = '70px ' + this.fontFamily;
                 context.fillText(message1, this.game.width * 0.5, this.game.height * 0.5 - 20);
                 context.font = '25px ' + this.fontFamily;
                 context.fillText(message2, this.game.width * 0.5, this.game.height * 0.5 + 20);
-                context.font = '25px ' + this.fontFamily;
-                context.fillText(message3, this.game.width * 0.5, this.game.height * 0.5 + 60);
             }
             // レーザ発射物の残数がパワーアップ時の色が変更される
             // context.fillStyle = this.color;
@@ -391,7 +377,7 @@ window.addEventListener('load', function(){
                 // (20 + 5 * i), (50), (3), (20)→カンマ区切り
                 //context.fillText(this.game.ammo + formattedTime, 180, 40);//→残数の表示がおかしい
                 context.fillRect( 20 + 5 * i, 50, 3, 20);
-                context.fillText(this.game.ammo + formattedTime, 210, 40);//→残数の表示がおかしい
+                context.fillText(this.game.ammo + formattedTime, 270, 40);//→残数の表示がおかしい
             }
             context.restore();// スコープ内のcontextだけ影を終了
         }
@@ -423,7 +409,6 @@ window.addEventListener('load', function(){
             this.gameOver = false;
 
             this.score = 0; // スコア点数の初期値
-            this.winningScore = 80; // 勝利スコア
 
             // ゲームをカウントダウンで終了するゲームにする
             this.gameTime = 0;
@@ -458,9 +443,9 @@ window.addEventListener('load', function(){
                 // 当たり判定、自機プレイヤーと衝突
                 if (this.checkCollsion(this.player, enemy)){
                     enemy.markedForDeletion = true;
-                    // luckyfishと衝突判定でpowerアップする
+                    // SubPowerと衝突判定でpowerアップする
                     // ラッキーフィッシュの長方形内に別の敵がいるが、厳格に===判定できる
-                    if(enemy.type === 'lucky') this.player.enterPowerUp();
+                    if(enemy.type === 'powers') this.player.enterPowerUp();
                     // ラッキーフィッシュ以外と当たると減点
                     else if (!this.gameOver) this.score--;
                     //this.score = this.lives;
@@ -476,11 +461,11 @@ window.addEventListener('load', function(){
                         if (enemy.lives <= 0){
                             enemy.markedForDeletion = true;
 
-                            // 敵が大型のhivewhaleに発射物レーザで倒したら、droneが5匹でる
-                            if(enemy.type === 'hive'){
+                            // 敵が大型のBossに発射物レーザで倒したら、SubBossが5匹でる
+                            if(enemy.type === 'boss'){
                                 for(let i = 0; i < 5; i++){
-                                // droneが同じ座標から5匹でないようにする
-                                this.enemies.push(new Drone(this,
+                                // SubBossが同じ座標から5匹でないようにする
+                                this.enemies.push(new SubBoss(this,
                                     enemy.x + Math.random() * enemy.width,
                                     enemy.y + Math.random() * enemy.height + 0.5));
                                 }
@@ -488,7 +473,7 @@ window.addEventListener('load', function(){
                             // カウント完了後に敵を倒しても点数加算されない
                             if (!this.gameOver) this.score += enemy.score;
                             // コメント入れれば＞＞勝利スコアになればゲームオーバーになる
-                            if (this.score > this.winningScore) this.gameOver = true;
+                            //if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
                 })
@@ -513,22 +498,16 @@ window.addEventListener('load', function(){
             // ①弾薬表示が最後にした＞見えないから
             this.ui.draw(context);
         }
-
         // 親super敵クラスの子クラスを呼ぶnewコンストラクタで自分自身
         addEnemy(){
             const randomize = Math.random();
-            // 0.3のAngler1を出現させて「this」敵をそのまま呼び出す！！
-            if(randomize < 0.3) this.enemies.push(new Angler1(
-                this,
-                //this.game,
-                //ctx.fillStyle = 'black',
-                //ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9)
-                ));
-            // 0.6はAngler2になる
-            else if (randomize < 0.6)this.enemies.push(new Angler2(this));
-            // 0.8はHivewhaleになる
-            else if (randomize < 0.7)this.enemies.push(new Hivewhale(this));
-            else this.enemies.push(new LuckyFish(this));
+            // 0.3のSub1を出現させて「this」敵をそのまま呼び出す！！
+            if(randomize < 0.3) this.enemies.push(new Sub1(this));
+            // 0.6はSub2になる
+            else if (randomize < 0.6)this.enemies.push(new Sub2(this));
+            // 0.8はBossになる
+            else if (randomize < 0.7)this.enemies.push(new Boss(this));
+            else this.enemies.push(new SubPower(this));
             // console.log(this.enemies);
         }
         // 当たり判定、長方形(プレイヤー)の大きさに含まれるかどうか
@@ -552,7 +531,6 @@ window.addEventListener('load', function(){
         ctx.clearRect(0, 0, canvas.width, canvas.height);// アニメーションがクリアされる
         game.draw(ctx);
         game.update(deltaTime);// game.update()に引数deltaTimeを入れる
-        //game.draw(ctx);
         requestAnimationFrame(animate);
     }
     animate(0);// animate(0)引数に「0」を入れる
