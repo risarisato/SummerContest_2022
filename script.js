@@ -21,7 +21,7 @@ window.addEventListener('load', function(){
                 ) && this.game.keys.indexOf(e.key) === -1){
                     this.game.keys.push(e.key);
                 // 入力操作にスペースを追加して攻撃
-                } else if ( e.key === ' '){
+                } else if ( e.key === ' ') {
                     this.game.player.shootTop();
                 // デバックモード
                 } else if ( e.key === '+'){
@@ -54,12 +54,31 @@ window.addEventListener('load', function(){
             this.height = 3 ;
             this.markedForDeletion = false;
         }
-        update(){
+        //レーザの距離はwitdth幅*0.95まで
+        way_up(){
             this.x += this.speed;
-            //this.y += this.speed; //斜めにレーザー
-            //レーザの距離はwitdth幅*0.95まで
+            this.y -= this.speed; //上斜めにレーザー
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
+        way_bottom(){
+            this.x += this.speed;
+            this.y += this.speed; //下斜めにレーザー
+            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
+        }
+        update(){
+            this.x += this.speed; //直進方向にレーザー
+            //this.y += this.speed; //斜めにレーザー
+            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
+        }
+
+        /*
+        update(x, y, speed){
+            this.x = x += this.speed;
+            this.y = y += this.speed;
+            this.speed = speed;
+            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
+        }
+        */
         draw(context){
             //canvasで描いたもレーザ
             context.fillStyle = 'yellow';
@@ -124,6 +143,7 @@ window.addEventListener('load', function(){
             // 発射物の配列を取り出す＞呼び出す
             this.projectiles.forEach(projectile => {
                 projectile.update();
+
             });
             // filter()で通過するすべての要素に新しい配列を提供する
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
@@ -175,8 +195,24 @@ window.addEventListener('load', function(){
         // パワーアップして、3連打になる
         shootBottom(){
             if (this.game.ammo > 0){
+                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
                 this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
-                this.projectiles.push(new Projectile(this.game, this.x - 5,this.y + 30, this.speed = 17));
+                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17));
+                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17, new update(this.game, update(this.bottom))));
+                
+                this.projectiles.push(new Projectile(
+                    this.game,
+                    this.x - 5,
+                    this.y + 30,
+                    this.speed = 17,
+
+                    // 発射物の配列を方向way_bottomでupdateは方向
+                    this.projectiles.forEach(projectile => {
+                        projectile.way_bottom();
+                }
+                )));
+                    console.log();
+                    
             }
         }
 
