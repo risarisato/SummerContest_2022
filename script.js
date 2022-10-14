@@ -54,6 +54,7 @@ window.addEventListener('load', function(){
             this.height = 3 ;
             this.markedForDeletion = false;
         }
+        /*
         //レーザの距離はwitdth幅*0.95まで
         way_up(){
             this.x += this.speed;
@@ -61,24 +62,17 @@ window.addEventListener('load', function(){
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
         way_bottom(){
-            this.x += this.speed;
-            this.y += this.speed; //下斜めにレーザー
+            this.x += this.speed +3;
+            this.y += this.speed +2; //下斜めにレーザー
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
+        */
         update(){
             this.x += this.speed; //直進方向にレーザー
             //this.y += this.speed; //斜めにレーザー
             if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
         }
 
-        /*
-        update(x, y, speed){
-            this.x = x += this.speed;
-            this.y = y += this.speed;
-            this.speed = speed;
-            if (this.x > this.game.width * 0.95) this.markedForDeletion = true;
-        }
-        */
         draw(context){
             //canvasで描いたもレーザ
             context.fillStyle = 'yellow';
@@ -195,11 +189,11 @@ window.addEventListener('load', function(){
         // パワーアップして、3連打になる
         shootBottom(){
             if (this.game.ammo > 0){
-                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
+
                 this.projectiles.push(new Projectile(this.game, this.x - 5, this.y, this.speed = 17));
-                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17));
-                //this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17, new update(this.game, update(this.bottom))));
-                
+                this.projectiles.push(new Projectile(this.game, this.x - 5, this.y + 30, this.speed = 17));
+
+                /*
                 this.projectiles.push(new Projectile(
                     this.game,
                     this.x - 5,
@@ -212,7 +206,7 @@ window.addEventListener('load', function(){
                 }
                 )));
                     console.log();
-                    
+                  */
             }
         }
 
@@ -241,6 +235,20 @@ window.addEventListener('load', function(){
             //this.y += this.speedX * 0.08;
             if(this.x + this.width < 0) this.markedForDeletion = true;
         }
+        /*
+        colorSet(angler1){
+            this.angler1 = angler1;
+            //塗りつぶしと同じ考え
+            this.angler1.fillStyle = 'black';
+            this.angler1.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+        }
+        */
+        draw(angler1){
+            this.angler1 = angler1;
+            //塗りつぶしと同じ考え
+            this.angler1.fillStyle = 'black';
+            this.angler1.ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+        }
         draw(context){
             //塗りつぶしと同じ考え
             context.fillStyle = 'red';
@@ -258,11 +266,14 @@ window.addEventListener('load', function(){
     // 継承関係の敵キャラクター(Enemy)オーバライド
     // 同メソッド再宣言して、継承されている場所を自動探し、コードの繰り返しを減らす
     class Angler1 extends Enemy {
-            //fillStyle = 'black';
-            constructor(game, context, fillStyle){
-            super(game);
+            fillStyle = 'black';
+            constructor(game, context, fillStyle, angler1) {
+            super(game, angler1);
+            //this.angler1 = angler1;
             this.context = context;
+            //this.fillStyle = fillStyle = 'black';
             this.fillStyle = fillStyle;
+            this.fillStyle = 'black';
             this.width = 100; //大きさは調整したときの残り
             this.height = 150;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
@@ -273,6 +284,9 @@ window.addEventListener('load', function(){
             //this.ctx.fillStyle = 'red';
             //this.x += this.speedX - this.game.speed;
             //this.y += this.speedX * 0.08;
+            //context.fillStyle = 'red';
+            //context.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9);
+            
         }
     }
     // 継承関係の敵キャラクター(Angler2)オーバライド
@@ -289,9 +303,8 @@ window.addEventListener('load', function(){
     }
     // 継承関係の敵キャラクター(LuckyFish)オーバライド
     class LuckyFish extends Enemy {
-        constructor(game, color){
+        constructor(game){
             super(game);
-            this.color = color;
             this.width = 99 * 0.5;
             this.height = 95 * 0.5;
             this.y = Math.random() * (this.game.height * 0.95 - this.height);
@@ -506,9 +519,15 @@ window.addEventListener('load', function(){
             // ③プレイヤーの呼び出し
             this.player.draw(context);
             // ②敵クラスの呼び出し
+
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             });
+            /*
+            this.enemies.forEach(enemy => {
+                enemy.colorSet(this.angler1);
+            });
+            */
             // ①弾薬表示が最後にした＞見えないから
             this.ui.draw(context);
         }
@@ -517,18 +536,13 @@ window.addEventListener('load', function(){
         addEnemy(){
             const randomize = Math.random();
             // 0.3のAngler1を出現させて「this」敵をそのまま呼び出す！！
-            if(randomize < 0.3) this.enemies.push(new Angler1(
-                this,
-                //this.game,
-                //ctx.fillStyle = 'black',
-                //ctx.fillRect(this.x, this.y, this.width * 0.9, this.height * 0.9)
-                ));
+            if(randomize < 0.3) this.enemies.push(new Angler1(this));
             // 0.6はAngler2になる
             else if (randomize < 0.6)this.enemies.push(new Angler2(this));
             // 0.8はHivewhaleになる
             else if (randomize < 0.7)this.enemies.push(new Hivewhale(this));
             else this.enemies.push(new LuckyFish(this));
-            // console.log(this.enemies);
+            //console.log(this.enemies);
         }
         // 当たり判定、長方形(プレイヤー)の大きさに含まれるかどうか
         checkCollsion(recr1, rect2){
