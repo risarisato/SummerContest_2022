@@ -373,7 +373,7 @@ window.addEventListener('load', function () {
 
             // ゲームカウントダウン
             const formattedTime = (30 - this.game.gameTime * 0.001).toFixed(1);// 小数点で表示
-            context.fillText('残り時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
+               context.fillText('残り時間: ' + formattedTime, 20, 100);// タイマーを表示させる座標
 
             //let how_to = '【操作】wasd↑←↓→ space +';
             //context.font = '10px ' + this.fontFamily;
@@ -438,12 +438,14 @@ window.addEventListener('load', function () {
             //this.debug = true;// 最初からデバッグモードが使えるとおかしい
             this.debug = true;
         }
-        // 更新する＞＞動くようにみえるところ
+        // 更新する＞＞動くようにみえるところ→仕様変更タイムアップでなく、敵に衝突するとゲームオーバ
         update(deltaTime) {
+            this.player.update(deltaTime);
+            /*
             if (!this.gameOver) this.gameTime += deltaTime;// ゲームをカウントダウン
             if (this.gameTime > this.timeLimit) this.gameOver = true;// ゲームをカウントダウン
             this.player.update(deltaTime);
-
+            */
             //this.background.update();// レイヤー設定したバックグラウンドを更新
             //this.background.layer4.update();// レイヤー4設定したバックグラウンドを更新
 
@@ -467,7 +469,9 @@ window.addEventListener('load', function () {
                     // ラッキーフィッシュの長方形内に別の敵がいるが、厳格に===判定できる
                     if (enemy.type === 'powers') this.player.enterPowerUp();
                     // ラッキーフィッシュ以外と当たると減点
-                    else if (!this.gameOver) this.score--;
+                    // SubPower以外と当たるとゲームオーバー
+                    else this.gameOver = true;
+                    //else if (!this.gameOver) this.score--;
                     //this.score = this.lives;
                 }
                 // 当たり判定、レーザ発射物と敵HP
@@ -481,17 +485,19 @@ window.addEventListener('load', function () {
                         if (enemy.lives <= 0) {
                             enemy.markedForDeletion = true;
 
-                            // 敵が大型のBossに発射物レーザで倒したら、SubBossが5匹でる
+                            // 敵が大型のBossに発射物レーザで倒したら、SubBossが8匹でる
                             if (enemy.type === 'boss') {
-                                for (let i = 0; i < 5; i++) {
+                                for (let i = 0; i < 8; i++) {
                                     // SubBossが同じ座標から5匹でないようにする
                                     this.enemies.push(new SubBoss(this,
                                         enemy.x + Math.random() * enemy.width,
                                         enemy.y + Math.random() * enemy.height + 0.5));
                                 }
                             }
-                            // カウント完了後に敵を倒しても点数加算されない
+                            // ゲームオーバーになる前に敵を倒して得点を加算する
                             if (!this.gameOver) this.score += enemy.score;
+                            // カウント完了後に敵を倒しても点数加算されない
+                            //if (!this.gameOver) this.score += enemy.score;
                             // コメント入れれば＞＞勝利スコアになればゲームオーバーになる
                             //if (this.score > this.winningScore) this.gameOver = true;
                         }
